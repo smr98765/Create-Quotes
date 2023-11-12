@@ -1,24 +1,54 @@
-import logo from './logo.svg';
-import './App.css';
+import {
+  Routes,
+ 
+  Route,
+
+  Navigate,
+  Link,
+} from "react-router-dom";
+import AllQuote from "./pages/AllQuote";
+import Layout from "./components/Layout/Layout";
+import React, { Suspense } from "react";
+import LoadingSpinner from "./components/UI/LoadingSpinner";
+import Comments from "./components/comments/Comments";
+
+const NewQuote = React.lazy(() => import("./pages/NewQuote"));
+const QuoteDetail = React.lazy(() => import("./pages/QuoteDetail"));
+const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Layout>
+      <Suspense
+        fallback={
+          <div className="centered">
+            <LoadingSpinner />
+          </div>
+        }
+      >
+        <Routes>
+          <Route path="/" element={<Navigate to="/quotes" replace />} />
+
+          <Route path="/quotes" element={<AllQuote />} />
+
+          <Route path="/quotes/:quotesId" element={<QuoteDetail />}>
+            <Route
+              path="/quotes/:quotesId"
+              element={
+                <div>
+                  <Link className="centered" to='comments'>Load comments</Link>
+                </div>
+              }
+            />
+			<Route path="comments" element={<Comments/>}/>
+          </Route>
+
+          <Route path="/new-quote" element={<NewQuote />} />
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </Layout>
   );
 }
 
